@@ -1,9 +1,10 @@
+import { routes } from "./data/Routes";
+import { BusLineDetail } from "./pages/BuslineDetail";
+
 export default function Route() {
     return (
         <div>
-            <div>Route</div>
-
-            <h2>Routes created by Arkar Hein</h2>
+            <BusLineDetail routesData={routes} />
         </div>
     );
 }
