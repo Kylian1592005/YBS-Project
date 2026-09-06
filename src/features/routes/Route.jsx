@@ -1,5 +1,9 @@
 export default function Route() {
-  return (
-    <div>Route</div>
-  )
+    return (
+        <div>
+            <div>Route</div>
+
+            <h2>Routes created by Arkar Hein</h2>
+        </div>
+    );
 }
