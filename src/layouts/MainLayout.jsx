@@ -7,7 +7,7 @@ export default function MainLayout() {
         <div className="min-h-screen flex flex-col bg-background text-foreground">
             <Navbar />
 
-            <div className="flex justify-content-between align-items-center">
+            <div className="flex flex-1">
                 <Sidebar />
 
                 {/* Dynamic Page Area */}
