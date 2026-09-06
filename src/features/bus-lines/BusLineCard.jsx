@@ -3,11 +3,9 @@ import { Link } from "react-router-dom";
 export default function BusLineCard({ route }) {
   return (
     <div className="card bg-base-100 border border-base-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group overflow-hidden">
-      {/* Decorative top accent gradient bar */}
       <div className="h-1.5 w-full bg-gradient-to-r from-primary via-secondary to-accent" />
 
       <div className="card-body p-6 flex flex-col items-center text-center">
-        {/* Centered Large Line Badge */}
         <div className="flex flex-col items-center">
           <span className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 mb-1">
             Transit Line
@@ -19,7 +17,6 @@ export default function BusLineCard({ route }) {
           </div>
         </div>
 
-        {/* Route Terminals Timeline */}
         <div className="w-full my-5 p-3.5 rounded-xl bg-base-200/40 border border-base-200 text-left space-y-2.5">
           <div className="flex items-center gap-3 text-xs">
             <span className="w-2.5 h-2.5 rounded-full ring-4 ring-emerald-500/20 bg-emerald-500 shrink-0" />
@@ -48,10 +45,11 @@ export default function BusLineCard({ route }) {
           </div>
         </div>
 
-        {/* Centered Action Button */}
+        
         <div className="card-actions w-full justify-center pt-1">
           <Link
-            to={`/routes/${route.id}`}
+            to="/routes"
+            state={{ selectedBus: route }}
             className="btn btn-sm btn-primary rounded-full px-6 font-medium shadow-sm hover:shadow group-hover:btn-active transition-all"
           >
             View Details →
