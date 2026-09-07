@@ -5,9 +5,10 @@ import MainLayout from "../layouts/MainLayout";
 import Search from "../features/search/Search";
 import Profile from "../features/profile/Profile";
 import BusLine from "../features/bus-lines/BusLine";
-import Route from "../features/routes/Route";
+// import Route from "../features/routes/Route";
 import Stop from "../features/stops/Stop";
 import Schedule from "../features/schedules/Schedule";
+import { BusLineDetail } from "../features/routes/BusLineDetail";
 
 const router = createBrowserRouter([
   {
@@ -20,9 +21,9 @@ const router = createBrowserRouter([
       { path: "profile", element: <Profile /> },
       
       { path: "bus-lines", element: <BusLine /> },
-      { path: "bus-lines/:id", element: <Route /> }, 
-      { path: "routes", element: <Route /> },
-      { path: "routes/:id", element: <Route /> },
+      { path: "bus-lines/:id", element: <BusLineDetail /> }, 
+      // { path: "routes", element: <Route /> },
+      // { path: "routes/:id", element: <Route /> },
 
       { path: "stops", element: <Stop /> },
       { path: "stops/:id", element: <Stop /> },

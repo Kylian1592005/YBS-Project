@@ -1,4 +1,4 @@
-import { Bus, Calendar, MapPin, Route as RouteIcon, Search as SearchIcon, User } from "lucide-react";
+import { Bus, Calendar, MapPin, Search as SearchIcon, User } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 export default function Sidebar() {
@@ -15,10 +15,6 @@ export default function Sidebar() {
             <NavLink to="/bus-lines" className={navLinkStyle}>
                 <Bus className="h-4 w-4" />
                 <span>Bus Lines</span>
-            </NavLink>
-            <NavLink to="/routes" className={navLinkStyle}>
-                <RouteIcon className="h-4 w-4" />
-                <span>Routes</span>
             </NavLink>
             <NavLink to="/stops" className={navLinkStyle}>
                 <MapPin className="h-4 w-4" />
