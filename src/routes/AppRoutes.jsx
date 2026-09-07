@@ -1,20 +1,7 @@
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Navigate,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
 
-// import Dashboard from "../features/dashboard/Dashboard";
-// import BusLineList from "../features/bus-lines/BusLineList";
-// import BusLineDetail from "../features/bus-lines/BusLineDetail";
-// import RouteList from "../features/routes/RouteList";
-// import RouteDetail from "../features/routes/RouteDetail";
-// import StopList from "../features/stops/StopList";
-// import StopDetail from "../features/stops/StopDetail";
-// import ScheduleList from "../features/schedules/ScheduleList";
-// import ScheduleDetail from "../features/schedules/ScheduleDetail";
 import Search from "../features/search/Search";
 import Profile from "../features/profile/Profile";
 import BusLine from "../features/bus-lines/BusLine";
@@ -27,22 +14,20 @@ const router = createBrowserRouter([
     path: "/",
     element: <MainLayout />,
     children: [
-      { index: true, element: <Navigate to="/" replace /> },
-      // { path: "dashboard", element: <Dashboard /> },
-      { path: "/search", element: <Search /> },
-      { path: "/profile", element: <Profile /> },
-      // { path: "bus-lines", element: <BusLineList /> },
-      // { path: "bus-lines/:id", element: <BusLineDetail /> },
-      { path: "/bus-lines", element: <BusLine /> },
-      // { path: "routes", element: <RouteList /> },
-      // { path: "routes/:id", element: <RouteDetail /> },
-      { path: "/routes", element: <Route /> },
-      // { path: "stops", element: <StopList /> },
-      // { path: "stops/:id", element: <StopDetail /> },
-      { path: "/stops", element: <Stop /> },
-      // { path: "schedules", element: <ScheduleList /> },
-      // { path: "schedules/:id", element: <ScheduleDetail /> },
-      { path: "/schedules", element: <Schedule /> },
+      { index: true, element: <BusLine /> },
+
+      { path: "search", element: <Search /> },
+      { path: "profile", element: <Profile /> },
+      
+      { path: "bus-lines", element: <BusLine /> },
+      { path: "bus-lines/:id", element: <Route /> }, 
+      { path: "routes", element: <Route /> },
+      { path: "routes/:id", element: <Route /> },
+
+      { path: "stops", element: <Stop /> },
+      { path: "stops/:id", element: <Stop /> },
+
+      { path: "schedules", element: <Schedule /> },
     ],
   },
 ]);
