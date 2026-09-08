@@ -1,4 +1,4 @@
-import { Bus, Calendar, MapPin, Search as SearchIcon, User } from "lucide-react";
+import { Bus, MapPin, Search as SearchIcon, User } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 export default function Sidebar() {
@@ -20,10 +20,10 @@ export default function Sidebar() {
                 <MapPin className="h-4 w-4" />
                 <span>Stops</span>
             </NavLink>
-            <NavLink to="/schedules" className={navLinkStyle}>
+            {/* <NavLink to="/schedules" className={navLinkStyle}>
                 <Calendar className="h-4 w-4" />
                 <span>Schedules</span>
-            </NavLink>
+            </NavLink> */}
 
             <div className="pt-4 px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 User Area

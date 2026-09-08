@@ -10,29 +10,18 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { allStops } from "../../data/mockData";
 
 export default function Search() {
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all"); // 'all' | 'stops' | 'lines'
 
-  // Dummy mock dataset
   const searchResults = {
-    stops: [
-      {
-        id: "YBS-042",
-        name: "Hledan Centre",
-        township: "Kamayut Township",
-        lines: ["YBS 21", "YBS 36", "YBS 65"],
-        distance: "0.2 km away",
-      },
-      {
-        id: "YBS-108",
-        name: "Sule Pagoda",
-        township: "Kyauktada Township",
-        lines: ["YBS 21", "YBS 30", "YBS 56", "YBS 65"],
-        distance: "4.5 km away",
-      },
-    ],
+    stops: allStops.map((stop) => ({
+      ...stop,
+      lines: stop.passingLines?.map((line) => line.lineCode) || [],
+      distance: "Yangon",
+    })),
     lines: [
       {
         code: "YBS 21",
@@ -48,6 +37,13 @@ export default function Search() {
       },
     ],
   };
+
+  const normalizedQuery = query.trim().toLowerCase();
+  const matchingStops = searchResults.stops.filter((stop) =>
+    [stop.name, stop.stopId, stop.township, stop.location, ...stop.lines]
+      .filter(Boolean)
+      .some((value) => value.toLowerCase().includes(normalizedQuery))
+  );
 
   const clearSearch = () => setQuery("");
 
@@ -168,14 +164,15 @@ export default function Search() {
           {(activeTab === "all" || activeTab === "stops") && (
             <div className="space-y-3">
               <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">
-                Stops ({searchResults.stops.length})
+                Stops ({matchingStops.length})
               </h2>
 
               <div className="bg-base-100 border border-base-200 rounded-2xl overflow-hidden shadow-sm divide-y divide-base-200">
-                {searchResults.stops.map((stop) => (
+                {matchingStops.map((stop) => (
                   <Link
                     key={stop.id}
-                    to={`/stops/${stop.id.toLowerCase()}`}
+                    to={`/stops/${stop.id}`}
+                    state={{ stop }}
                     className="p-4 flex items-center justify-between hover:bg-base-200/50 transition group"
                   >
                     <div className="flex items-start gap-3.5">
@@ -188,7 +185,7 @@ export default function Search() {
                             {stop.name}
                           </p>
                           <span className="text-[10px] font-mono font-bold bg-base-200 text-slate-600 px-1.5 py-0.5 rounded">
-                            {stop.id}
+                            {stop.stopId}
                           </span>
                         </div>
                         <p className="text-xs text-slate-500">
