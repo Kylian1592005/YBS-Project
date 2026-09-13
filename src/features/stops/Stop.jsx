@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Bus,
@@ -11,11 +11,27 @@ import {
 } from "lucide-react";
 import { allStops, detailedStopsMap } from "../../data/mockData";
 
+const FAVORITE_STOPS_KEY = "favoriteStops";
+const DEFAULT_FAVORITE_STOPS = ["s1", "s7", "s13"];
+
+const getFavoriteStops = () => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(FAVORITE_STOPS_KEY) || "[]");
+    return Array.isArray(saved) && saved.length ? saved : DEFAULT_FAVORITE_STOPS;
+  } catch {
+    return DEFAULT_FAVORITE_STOPS;
+  }
+};
+
 export default function Stop() {
   const [query, setQuery] = useState("");
   const [township, setTownship] = useState("all");
   const [status, setStatus] = useState("all");
-  const [favorites, setFavorites] = useState([]);
+  const [favorites, setFavorites] = useState(getFavoriteStops);
+
+  useEffect(() => {
+    localStorage.setItem(FAVORITE_STOPS_KEY, JSON.stringify(favorites));
+  }, [favorites]);
 
   const stops = useMemo(
     () =>
@@ -56,11 +72,14 @@ export default function Stop() {
   }, [query, status, stops, township]);
 
   const toggleFavorite = (stopId) => {
-    setFavorites((current) =>
-      current.includes(stopId)
+    setFavorites((current) => {
+      const nextFavorites = current.includes(stopId)
         ? current.filter((id) => id !== stopId)
-        : [...current, stopId]
-    );
+        : [...current, stopId];
+
+      localStorage.setItem(FAVORITE_STOPS_KEY, JSON.stringify(nextFavorites));
+      return nextFavorites;
+    });
   };
 
   const clearFilters = () => {

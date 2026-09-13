@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   User, 
@@ -12,8 +13,68 @@ import {
   Edit3, 
   Star 
 } from 'lucide-react';
+import { allStops, detailedStopsMap } from '../../data/mockData';
+
+const FAVORITE_STOPS_KEY = 'favoriteStops';
+const DEFAULT_FAVORITE_STOPS = ['s1', 's7', 's13'];
+
+const getFavoriteStops = () => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(FAVORITE_STOPS_KEY) || '[]');
+    return Array.isArray(saved) && saved.length ? saved : DEFAULT_FAVORITE_STOPS;
+  } catch {
+    return DEFAULT_FAVORITE_STOPS;
+  }
+};
 
 export default function Profile() {
+  const [profile, setProfile] = useState({
+    name: 'Nyo Min Htin',
+    email: 'nyomin@example.com',
+  });
+  const [formData, setFormData] = useState(profile);
+  const [isEditing, setIsEditing] = useState(false);
+  const [favoriteStopIds] = useState(getFavoriteStops);
+
+  useEffect(() => {
+    localStorage.setItem(FAVORITE_STOPS_KEY, JSON.stringify(favoriteStopIds));
+  }, [favoriteStopIds]);
+
+  const savedStops = useMemo(() => {
+    const normalizedIds = [...new Set(favoriteStopIds)];
+
+    return normalizedIds.map((id) => {
+      const stopDetails = detailedStopsMap[id] || allStops.find((stop) => stop.id === id);
+      const lines = stopDetails?.servingBusLines?.map((line) => line.routeNumber) ||
+        stopDetails?.passingLines?.map((line) => `YBS ${line.lineCode}`) || [];
+
+      return {
+        id,
+        displayName: stopDetails?.name || 'Unknown Stop',
+        lines,
+      };
+    });
+  }, [favoriteStopIds]);
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditToggle = () => {
+    if (isEditing) {
+      setProfile(formData);
+    } else {
+      setFormData(profile);
+    }
+    setIsEditing((prev) => !prev);
+  };
+
+  const handleCancel = () => {
+    setFormData(profile);
+    setIsEditing(false);
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
       
@@ -33,19 +94,63 @@ export default function Profile() {
             <User size={40} />
           </div>
 
-          <div className="space-y-1">
-            <h2 className="text-xl font-extrabold text-base-content">Nyo Min Htin</h2>
-            <p className="text-xs text-slate-500 font-medium">nyomin@example.com</p>
+          <div className="space-y-1 min-w-0 w-full sm:w-auto">
+            {isEditing ? (
+              <>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full sm:w-56 rounded-xl border border-base-300 bg-base-100 px-3 py-2 text-base font-extrabold text-base-content outline-none focus:border-blue-500"
+                />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full sm:w-64 rounded-xl border border-base-300 bg-base-100 px-3 py-2 text-xs text-slate-500 font-medium outline-none focus:border-blue-500"
+                />
+              </>
+            ) : (
+              <>
+                <h2 className="text-xl font-extrabold text-base-content">{profile.name}</h2>
+                <p className="text-xs text-slate-500 font-medium">{profile.email}</p>
+              </>
+            )}
             <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider pt-1">
               Member since 2026
             </p>
           </div>
         </div>
 
-        <button className="btn btn-outline border-base-300 gap-2 normal-case rounded-xl hover:bg-base-200 text-xs">
-          <Edit3 size={15} />
-          Edit Profile
-        </button>
+        {isEditing ? (
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:border-slate-300"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleEditToggle}
+              className="px-4 py-2.5 rounded-xl border border-emerald-500 bg-emerald-600 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-500 hover:border-emerald-400"
+            >
+              Save
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={handleEditToggle}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-blue-200 bg-blue-50 text-xs font-semibold text-blue-700 shadow-sm transition hover:bg-blue-100 hover:border-blue-300"
+          >
+            <Edit3 size={15} className="stroke-[2.1]" />
+            Edit Profile
+          </button>
+        )}
       </div>
 
       {/* QUICK STATS CARDS */}
@@ -56,7 +161,7 @@ export default function Profile() {
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
               <Star size={14} className="text-amber-500 fill-amber-500" /> Saved Stops
             </span>
-            <p className="text-3xl font-black text-base-content mt-2">12</p>
+            <p className="text-3xl font-black text-base-content mt-2">{savedStops.length}</p>
             <p className="text-xs text-slate-500 mt-0.5">stops saved</p>
           </div>
           <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl border border-amber-100">
@@ -89,60 +194,33 @@ export default function Profile() {
         </div>
 
         <div className="divide-y divide-base-200">
-          {/* Stop Item 1 */}
-          <Link 
-            to="/stops/hledan-centre" 
-            className="py-3.5 flex items-center justify-between hover:bg-base-200/50 px-2 rounded-xl transition group"
-          >
-            <div className="flex items-center gap-3">
-              <MapPin size={18} className="text-blue-600" />
-              <span className="font-bold text-sm text-base-content">Hledan Centre</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex gap-1.5">
-                <span className="badge badge-sm bg-base-200 text-slate-700 font-bold border-none">YBS 21</span>
-                <span className="badge badge-sm bg-base-200 text-slate-700 font-bold border-none">YBS 36</span>
-              </div>
-              <ChevronRight size={16} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-            </div>
-          </Link>
+          {savedStops.map((stop) => {
+            const stopDetails = detailedStopsMap[stop.id];
 
-          {/* Stop Item 2 */}
-          <Link 
-            to="/stops/sule" 
-            className="py-3.5 flex items-center justify-between hover:bg-base-200/50 px-2 rounded-xl transition group"
-          >
-            <div className="flex items-center gap-3">
-              <MapPin size={18} className="text-blue-600" />
-              <span className="font-bold text-sm text-base-content">Sule</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex gap-1.5">
-                <span className="badge badge-sm bg-base-200 text-slate-700 font-bold border-none">YBS 21</span>
-                <span className="badge badge-sm bg-base-200 text-slate-700 font-bold border-none">YBS 30</span>
-                <span className="badge badge-sm bg-base-200 text-slate-700 font-bold border-none">YBS 65</span>
-              </div>
-              <ChevronRight size={16} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-            </div>
-          </Link>
-
-          {/* Stop Item 3 */}
-          <Link 
-            to="/stops/myaynigone" 
-            className="py-3.5 flex items-center justify-between hover:bg-base-200/50 px-2 rounded-xl transition group"
-          >
-            <div className="flex items-center gap-3">
-              <MapPin size={18} className="text-blue-600" />
-              <span className="font-bold text-sm text-base-content">Myaynigone</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex gap-1.5">
-                <span className="badge badge-sm bg-base-200 text-slate-700 font-bold border-none">YBS 21</span>
-                <span className="badge badge-sm bg-base-200 text-slate-700 font-bold border-none">YBS 65</span>
-              </div>
-              <ChevronRight size={16} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-            </div>
-          </Link>
+            return (
+              <Link
+                key={stop.id}
+                to={`/stops/${stop.id}`}
+                state={{ stop: stopDetails }}
+                className="py-3.5 flex items-center justify-between hover:bg-base-200/50 px-2 rounded-xl transition group"
+              >
+                <div className="flex items-center gap-3">
+                  <MapPin size={18} className="text-blue-600" />
+                  <span className="font-bold text-sm text-base-content">{stop.displayName}</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex gap-1.5 flex-wrap justify-end">
+                    {stop.lines.map((line) => (
+                      <span key={line} className="badge badge-sm bg-base-200 text-slate-700 font-bold border-none">
+                        {line}
+                      </span>
+                    ))}
+                  </div>
+                  <ChevronRight size={16} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </Link>
+            );
+          })}
         </div>
 
         <div className="pt-2 text-right">
